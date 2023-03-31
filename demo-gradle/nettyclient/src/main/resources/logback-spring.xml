@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+    <property name="PATTERN" value="%d{HH:mm:ss.SSS}[%t][%-5level] [%X{traceId}] %class{36}[%L] %M -%msg%xEx%n"/>
+    <property name="FILE_HOME" value="../logs"/>
+    <property name="BACKUP_HOME" value="../logs/archi"/>
+    <property name="BACKUP_HZ" value="%d{yyyy-MM-dd}"/>
+    <property name="EXTIME" value="60"/>
+    <property name="EXAM" value="examwebserver"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!-- 过滤其他 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 配置日志策略 -->
+    <appender name="${EXAM}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--实时日志输出路径-->
+        <file>${FILE_HOME}/${EXAM}.log</file>
+        <!--输出内容格式-->
+        <encoder>
+            <!--输出日期/级别/线程/类名/方法名/行号/信息-->
+            <pattern>${PATTERN}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!-- 级别 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--日志滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 文件名 -->
+            <fileNamePattern>${BACKUP_HOME}/${EXAM}/${BACKUP_HZ}.%i.log</fileNamePattern>
+            <!-- 保存60天日志 -->
+            <maxHistory>30</maxHistory>
+            <!--超过size就会在当天又生成一个日志文件，序号递增-->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    <!--通过 LoggerFactory.getLogger("procLog") 可以获取到这个logger-->
+    <!--由于这个logger自动继承了root的appender，root中已经有stdout的appender了，自己这边又引入了stdout的appender-->
+    <!--如果没有设置 additivity="false" ,就会导致一条日志在控制台输出两次的情况-->
+    <!--additivity表示要不要使用rootLogger配置的appender进行输出-->
+    <logger name="${EXAM}" level="INFO" additivity="false">
+        <appender-ref ref="${EXAM}"/>
+    </logger>
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

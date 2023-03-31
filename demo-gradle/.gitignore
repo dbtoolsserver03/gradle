@@ -1,0 +1,19 @@
+.gradle
+.idea/
+# Created by .ignore support plugin (hsz.mobi)
+*.iml
+*.class
+*.jar
+.classpath
+.gradletasknamecache
+.DS_Store
+target/
+classes/
+.settings/
+.project/
+*build/
+out
+/gradle/
+/gradlew
+/.gitattributes
+/gradlew.bat
